@@ -1,7 +1,11 @@
-import { Component, input, inject, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MarkdownComponent } from 'ngx-markdown';
+
+// Global KaTeX declaration
+declare const katex: any;
+declare const renderMathInElement: any;
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -32,9 +36,9 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
         @if (message().type === 'ai') {
             <markdown 
               class="message-content rendered-content markdown"
-              [data]="message().content"
               katex
-              #contentElement>
+              (click)="onMarkdownClick($event)">
+              {{ message().content }}
             </markdown>
           } @else {
             <div class="message-content plain-content">
@@ -462,8 +466,7 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
     }
   `]
 })
-export class MessageDisplayComponent implements AfterViewInit {
-  @ViewChild('contentElement', { read: ElementRef }) contentElement?: ElementRef;
+export class MessageDisplayComponent {
 
   private dialog = inject(MatDialog);
   private feedbackService = inject(FeedbackService);
@@ -475,24 +478,38 @@ export class MessageDisplayComponent implements AfterViewInit {
 
 
 
-  ngAfterViewInit(): void {
-    this.setupEventListeners();
-  }
-
-
-  private setupEventListeners(): void {
-    if (!this.contentElement) return;
-
-    const element = this.contentElement.nativeElement;
-
-    // Add click listeners for LaTeX expressions (if ngx-markdown supports them)
-    element.addEventListener('click', (event: Event) => {
-      const target = event.target as HTMLElement;
-      if (target.classList.contains('math-block') || target.classList.contains('math-inline')) {
-        // Could implement LaTeX source copying here if needed
-        console.log('Math element clicked:', target);
+  onMarkdownClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // Check for LaTeX/KaTeX elements using closest() to handle nested elements
+    const mathElement = target.closest('.katex, .katex-display');
+    
+    if (mathElement) {
+      // Handle LaTeX element click
+      console.log('LaTeX element clicked:', mathElement.className);
+      
+      // Try to get LaTeX source from various possible attributes
+      const latexSource = mathElement.getAttribute('data-latex') || 
+                         mathElement.getAttribute('data-original') ||
+                         mathElement.getAttribute('title') ||
+                         mathElement.textContent;
+      
+      if (latexSource) {
+        // Copy LaTeX source to clipboard
+        navigator.clipboard.writeText(latexSource).then(() => {
+          console.log('LaTeX source copied to clipboard:', latexSource);
+          // Could show a toast notification here
+        }).catch(err => {
+          console.error('Failed to copy LaTeX source:', err);
+        });
+      } else {
+        console.log('No LaTeX source found for element');
       }
-    });
+      
+      // Prevent event propagation to avoid other click handlers
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 
   onCitationClick(citation: any): void {
@@ -533,4 +550,6 @@ export class MessageDisplayComponent implements AfterViewInit {
     // TODO: Get model name from ModelService
     return modelId;
   }
+
+
 }

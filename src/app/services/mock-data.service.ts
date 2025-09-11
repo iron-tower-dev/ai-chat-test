@@ -108,7 +108,7 @@ export class MockDataService {
     
     For calculating component render time, we can use:
     
-    $$t_{render} = \\frac{n \\cdot c}{p}$$
+    $t_{render} = \\frac{n \\cdot c}{p}$
     
     Where:
     - $t_{render}$ = total render time
@@ -143,7 +143,7 @@ export class MockDataService {
     
     The efficiency gain can be calculated as:
     
-    $efficiency = \\frac{signals_{updates}}{traditional_{updates}} \\times 100\\%$`,
+    $efficiency = \frac{signals_{updates}}{traditional_{updates}} \times 100\%$`,
 
     `Let me help you understand TypeScript best practices:
 

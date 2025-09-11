@@ -36,13 +36,8 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/prismjs/prism.js",
-              "node_modules/prismjs/components/prism-typescript.js",
-              "node_modules/prismjs/components/prism-javascript.js",
-              "node_modules/prismjs/components/prism-python.js",
-              "node_modules/prismjs/components/prism-json.js",
-              "node_modules/prismjs/components/prism-bash.js",
-              "node_modules/prismjs/components/prism-css.js"
+              "node_modules/katex/dist/katex.min.js",
+              "node_modules/katex/dist/contrib/auto-render.min.js"
             ]
           },
           "configurations": {
@@ -103,13 +98,8 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/prismjs/prism.js",
-              "node_modules/prismjs/components/prism-typescript.js",
-              "node_modules/prismjs/components/prism-javascript.js",
-              "node_modules/prismjs/components/prism-python.js",
-              "node_modules/prismjs/components/prism-json.js",
-              "node_modules/prismjs/components/prism-bash.js",
-              "node_modules/prismjs/components/prism-css.js"
+              "node_modules/katex/dist/katex.min.js",
+              "node_modules/katex/dist/contrib/auto-render.min.js"
             ]
           }
         }
