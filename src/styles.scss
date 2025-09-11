@@ -41,11 +41,12 @@ body {
 /* Import Prism styles for code syntax highlighting */
 @import 'prismjs/themes/prism-tomorrow.css';
 
-/* ngx-markdown styling */
-markdown, .markdown, markdown * {
-  background: transparent !important;
-  color: inherit !important;
+/* ngx-markdown base reset (scoped, non-destructive) */
+markdown, .markdown {
+  background: transparent;
+  color: inherit;
 }
+/* Keep code tokens intact (no universal descendant rules) */
 
 /* Markdown content styling */
 markdown {
