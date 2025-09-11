@@ -1,15 +1,14 @@
-import { Component, input, inject, signal, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, input, inject, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { Message } from '../../models/chat.models';
-import { MarkdownService } from '../../services/markdown.service';
 import { FeedbackService } from '../../services/feedback.service';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
 
@@ -22,19 +21,21 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatChipsModule
+    MatChipsModule,
+    MarkdownComponent
   ],
   template: `
     <div class="message" [class]="'message-' + message().type">
       <mat-card class="message-card" [class.streaming]="isStreaming()">
         <!-- Message Content -->
         <div class="message-content-wrapper">
-          @if (message().type === 'ai' && renderedContent()) {
-            <div 
-              class="message-content rendered-content"
-              [innerHTML]="renderedContent()"
+        @if (message().type === 'ai') {
+            <markdown 
+              class="message-content rendered-content markdown"
+              [data]="message().content"
+              katex
               #contentElement>
-            </div>
+            </markdown>
           } @else {
             <div class="message-content plain-content">
               {{ message().content }}
@@ -464,50 +465,33 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
 export class MessageDisplayComponent implements AfterViewInit {
   @ViewChild('contentElement', { read: ElementRef }) contentElement?: ElementRef;
 
-  private markdownService = inject(MarkdownService);
-  private sanitizer = inject(DomSanitizer);
   private dialog = inject(MatDialog);
   private feedbackService = inject(FeedbackService);
 
   // Inputs
   message = input.required<Message>();
   isStreaming = input<boolean>(false);
+  
 
-  // Signals
-  renderedContent = signal<SafeHtml>('');
+
 
   ngAfterViewInit(): void {
-    this.renderContent();
     this.setupEventListeners();
   }
 
-  private renderContent(): void {
-    const content = this.message().content;
-    if (!content) return;
-
-    if (this.message().type === 'ai') {
-      const rendered = this.markdownService.processMarkdown(content);
-      this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(rendered));
-    }
-  }
 
   private setupEventListeners(): void {
     if (!this.contentElement) return;
 
     const element = this.contentElement.nativeElement;
 
-    // Add click listeners for LaTeX expressions
+    // Add click listeners for LaTeX expressions (if ngx-markdown supports them)
     element.addEventListener('click', (event: Event) => {
       const target = event.target as HTMLElement;
       if (target.classList.contains('math-block') || target.classList.contains('math-inline')) {
-        this.markdownService.copyLatexSource(target);
+        // Could implement LaTeX source copying here if needed
+        console.log('Math element clicked:', target);
       }
-    });
-
-    // Add tooltips to math expressions
-    const mathElements = element.querySelectorAll('.math-block, .math-inline');
-    mathElements.forEach((el: Element) => {
-      (el as HTMLElement).title = 'Click to copy LaTeX source';
     });
   }
 
@@ -537,9 +521,8 @@ export class MessageDisplayComponent implements AfterViewInit {
   }
 
   copyMessage(): void {
-    const content = this.markdownService.stripMarkdown(this.message().content);
+    const content = this.message().content;
     navigator.clipboard.writeText(content).then(() => {
-      // TODO: Show success toast
       console.log('Message copied to clipboard');
     }).catch(err => {
       console.error('Failed to copy message:', err);
