@@ -87,32 +87,36 @@ markdown {
     font-style: italic;
   }
   
-  // Code blocks - override any dark theme
+  // Code blocks with dark theme for better readability
   pre {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-on-surface);
-    border: 1px solid var(--mat-sys-outline-variant);
+    background: #2d3748;
+    color: #e2e8f0;
+    border: 1px solid #4a5568;
     border-radius: 8px;
     padding: 16px;
     overflow-x: auto;
     margin: 1em 0;
+    font-weight: 400;
     
     code {
       background: transparent;
       color: inherit;
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       font-size: 0.9em;
+      font-weight: 400;
     }
   }
   
-  // Inline code
+  // Inline code with better contrast
   code:not(pre code) {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-primary);
+    background: #f1f5f9;
+    color: #1e293b;
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9em;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
   }
   
   // Tables
@@ -159,23 +163,44 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background: transparent;
   }
   
-  // Code blocks with light background
+  // Code blocks with dark theme for better readability
   pre, pre[class*="language-"] {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-on-surface);
-    border: 1px solid var(--mat-sys-outline-variant);
+    background: #2d3748;
+    color: #e2e8f0;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    padding: 16px;
+    font-weight: 400;
   }
   
-  code {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-primary);
+  code:not(pre code) {
+    background: #f1f5f9;
+    color: #1e293b;
     padding: 0.2em 0.4em;
     border-radius: 3px;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
   }
   
   pre code {
     background: transparent;
-    color: var(--mat-sys-on-surface);
+    color: #e2e8f0;
     padding: 0;
+    font-weight: 400;
+  }
+
+  // KaTeX styling
+  .katex {
+    color: inherit;
+    font-size: 1.1em;
+  }
+
+  .katex-display {
+    margin: 1em 0;
+    text-align: center;
+  }
+
+  .katex-html {
+    color: inherit;
   }
 }

@@ -36,9 +36,9 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
         @if (message().type === 'ai') {
             <markdown 
               class="message-content rendered-content markdown"
-              [data]="message().content"
               katex
               (click)="onMarkdownClick($event)">
+              {{ message().content }}
             </markdown>
           } @else {
             <div class="message-content plain-content">
@@ -482,7 +482,7 @@ export class MessageDisplayComponent {
     const target = event.target as HTMLElement;
     
     // Check for LaTeX/KaTeX elements using closest() to handle nested elements
-    const mathElement = target.closest('.math-block, .math-inline, .katex, .katex-display');
+    const mathElement = target.closest('.katex, .katex-display');
     
     if (mathElement) {
       // Handle LaTeX element click
@@ -550,4 +550,6 @@ export class MessageDisplayComponent {
     // TODO: Get model name from ModelService
     return modelId;
   }
+
+
 }
