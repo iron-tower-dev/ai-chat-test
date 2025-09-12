@@ -448,29 +448,24 @@ export class ChatAreaComponent implements AfterViewInit, AfterViewChecked, OnDes
       });
     } else {
       // No conversation - create new one and send message
-      this.chatService.createConversation().subscribe({
-        next: (conversation) => {
-          // Navigate to new conversation
-          this.router.navigate(['/chat', conversation.id]);
-          
-          // Send the message to the new conversation
-          setTimeout(() => {
-            this.chatService.sendMessage(conversation.id, text).subscribe({
-              next: (streamingResponse) => {
-                // Streaming is handled by the service signals and effects
-              },
-              error: (error) => {
-                console.error('Error sending message:', error);
-              },
-              complete: () => {
-                if (this.messagesContainer) {
-                  this.scrollService.forceScrollToBottom(this.messagesContainer);
-                }
-                this.messageChange.emit();
-              }
-            });
-          }, 100); // Small delay to ensure navigation completes
+// No conversation - create new one and send message
+this.chatService.createConversation().subscribe({
+  next: (conversation) => {
+    this.router.navigate(['/chat', conversation.id]).then(() => {
+      this.chatService.sendMessage(conversation.id, text).subscribe({
+        next: () => {},
+        error: (error) => {
+          console.error('Error sending message:', error);
         },
+        complete: () => {
+          if (this.messagesContainer) {
+            this.scrollService.forceScrollToBottom(this.messagesContainer);
+          }
+          this.messageChange.emit();
+        }
+      });
+    }).catch(err => console.error('Navigation failed:', err));
+  },
         error: (error) => {
           console.error('Error creating conversation:', error);
         }
