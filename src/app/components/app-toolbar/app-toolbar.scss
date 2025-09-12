@@ -1,0 +1,62 @@
+.app-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100; /* keep below CDK overlays (overlays ~1000) */
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.95) 0%, 
+    rgba(139, 92, 246, 0.95) 50%, 
+    rgba(59, 130, 246, 0.95) 100%) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2), 
+              0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-left: 16px;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sidenav-toggle,
+.theme-toggle,
+.user-menu {
+  margin-left: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.sidenav-toggle {
+  margin-left: 0;
+}
+
+.sidenav-toggle:hover,
+.theme-toggle:hover,
+.user-menu:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 1.1rem;
+    margin-left: 8px;
+  }
+  
+  .app-toolbar {
+    padding: 0 8px;
+  }
+}
