@@ -51,7 +51,7 @@ export class ScrollService {
 
     element.scrollTo({
       top: scrollHeight,
-      behavior: useSmooth ? 'smooth' : 'instant'
+      behavior: useSmooth ? 'smooth' : 'auto'
     });
 
     // Reset scrolling state after animation
