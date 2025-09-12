@@ -128,9 +128,9 @@ export class ChatLayoutComponent implements OnInit {
   private dialog = inject(MatDialog);
   
   // Services
-  protected uiState = inject(UiStateService);
-  protected layout = inject(LayoutService);
-
+  // Services
+  readonly uiState = inject(UiStateService);
+  readonly layout = inject(LayoutService);
   // Reactive state
   currentConversation = this.chatService.currentConversation;
 
