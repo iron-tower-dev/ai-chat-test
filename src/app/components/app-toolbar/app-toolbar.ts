@@ -6,6 +6,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+
 @Component({
   selector: 'app-toolbar',
   imports: [
@@ -17,8 +19,13 @@ import { MatDividerModule } from '@angular/material/divider';
     MatDividerModule
   ],
   templateUrl: './app-toolbar.html',
-  styleUrl: './app-toolbar.scss'
+  styleUrls: ['./app-toolbar.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+export class AppToolbarComponent {
+  readonly isSidenavOpen = input<boolean>(false);
+  readonly toggleSidenav = output<void>();
+}
 export class AppToolbarComponent {
   isSidenavOpen = input<boolean>(false);
   toggleSidenav = output<void>();
