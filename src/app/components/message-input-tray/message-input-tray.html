@@ -1,0 +1,37 @@
+<div class="input-tray">
+  <div class="tray-actions">
+    <button 
+      mat-icon-button 
+      (click)="attachDocument.emit()"
+      matTooltip="Attach document"
+      class="tray-button">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    
+    <button 
+      mat-icon-button 
+      matTooltip="Voice input (Coming Soon)"
+      disabled
+      class="tray-button">
+      <mat-icon>mic</mat-icon>
+    </button>
+    
+    <button 
+      mat-icon-button 
+      matTooltip="Upload image (Coming Soon)"
+      disabled
+      class="tray-button">
+      <mat-icon>image</mat-icon>
+    </button>
+    
+    <mat-divider vertical></mat-divider>
+    
+    <button 
+      mat-icon-button 
+      matTooltip="Templates (Coming Soon)"
+      disabled
+      class="tray-button">
+      <mat-icon>text_snippet</mat-icon>
+    </button>
+  </div>
+</div>

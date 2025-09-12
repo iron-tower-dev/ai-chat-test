@@ -1,19 +1,16 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { ChatService } from '../../services/chat.service';
 import { ModelService } from '../../services/model.service';
+import { UiStateService } from '../../services/ui-state.service';
+import { LayoutService } from '../../services/layout';
+import { AppToolbarComponent } from '../app-toolbar/app-toolbar';
 import { ChatHistorySidebarComponent } from '../chat-history-sidebar/chat-history-sidebar.component';
 import { ChatAreaComponent } from '../chat-area/chat-area.component';
-import { ModelSelectorComponent } from '../model-selector/model-selector.component';
 import { DocumentDialogComponent } from '../document-dialog/document-dialog.component';
 
 @Component({
@@ -22,36 +19,27 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
   imports: [
     CommonModule,
     MatSidenavModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
+    AppToolbarComponent,
     ChatHistorySidebarComponent,
-    ChatAreaComponent,
-    ModelSelectorComponent
+    ChatAreaComponent
   ],
   template: `
     <div class="chat-layout">
-      <!-- Mobile Toolbar -->
-      @if (isMobile()) {
-        <mat-toolbar class="mobile-toolbar">
-          <button mat-icon-button (click)="sidenavOpened.set(!sidenavOpened())">
-            <mat-icon>{{ sidenavOpened() ? 'close' : 'menu' }}</mat-icon>
-          </button>
-          <span class="toolbar-title">AI Chatbot</span>
-          <app-model-selector></app-model-selector>
-        </mat-toolbar>
-      }
+      <!-- App Toolbar -->
+      <app-toolbar 
+        [isSidenavOpen]="uiState.sidenavOpened()"
+        (toggleSidenav)="uiState.toggleSidenav()">
+      </app-toolbar>
 
       <mat-sidenav-container class="sidenav-container">
         <!-- Chat History Sidebar -->
         <mat-sidenav 
           #sidenav
-          [mode]="sidenavMode()" 
-          [opened]="sidenavOpened()"
-          [fixedInViewport]="isMobile()"
+          [mode]="layout.sidenavMode()" 
+          [opened]="uiState.sidenavOpened()"
+          [fixedInViewport]="layout.isMobile()"
           class="chat-sidebar"
-          (openedChange)="sidenavOpened.set($event)">
+          (openedChange)="uiState.setSidenavOpened($event)">
           <app-chat-history-sidebar 
             (conversationSelected)="onConversationSelected($event)"
             (newConversation)="onNewConversation()">
@@ -60,46 +48,21 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
 
         <!-- Main Chat Area -->
         <mat-sidenav-content class="chat-content">
-          <!-- Desktop Toolbar -->
-          @if (!isMobile()) {
-            <mat-toolbar class="desktop-toolbar">
-              <div class="toolbar-left">
-                <button mat-icon-button (click)="sidenavOpened.set(!sidenavOpened())">
-                  <mat-icon>{{ sidenavOpened() ? 'menu_open' : 'menu' }}</mat-icon>
-                </button>
-                <span class="toolbar-title">
-                  @if (currentConversation()) {
-                    {{ currentConversation()!.title }}
-                  } @else {
-                    AI Chatbot
-                  }
-                </span>
-              </div>
-              <div class="toolbar-right">
-                <app-model-selector></app-model-selector>
-              </div>
-            </mat-toolbar>
-          }
-
-          <!-- Chat Area -->
-          <div class="chat-area-container">
+          @if (currentConversation()) {
+            <!-- Chat Area with Conversation -->
             <app-chat-area
-              [conversation]="currentConversation()"
-              (messageChange)="onConversationUpdate()">
+              (messageChange)="onConversationUpdate()"
+              (attachDocument)="openDocumentDialog()">
             </app-chat-area>
-
-            <!-- Document Upload FAB -->
-            @if (currentConversation()) {
-              <button 
-                mat-fab 
-                color="accent"
-                class="document-fab"
-                matTooltip="Upload Documents for RAG"
-                (click)="openDocumentDialog()">
-                <mat-icon>attach_file</mat-icon>
-              </button>
-            }
-          </div>
+          } @else {
+            <!-- Empty State with Centered Input -->
+            <div class="empty-state">
+              <app-chat-area
+                (messageChange)="onConversationUpdate()"
+                (attachDocument)="openDocumentDialog()">
+              </app-chat-area>
+            </div>
+          }
         </mat-sidenav-content>
       </mat-sidenav-container>
     </div>
@@ -111,17 +74,10 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
       flex-direction: column;
     }
 
-    .mobile-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--mat-toolbar-container-background-color);
-      z-index: 1000;
-    }
-
     .sidenav-container {
       flex: 1;
       background-color: var(--mat-app-background-color);
+      margin-top: 64px; /* Account for fixed toolbar */
     }
 
     .chat-sidebar {
@@ -138,38 +94,17 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
       height: 100%;
     }
 
-    .desktop-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--mat-toolbar-container-background-color);
-      border-bottom: 1px solid var(--mat-divider-color);
-      z-index: 10;
-    }
-
-    .toolbar-left,
-    .toolbar-right {
+    .empty-state {
+      height: 100%;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
     }
 
-    .toolbar-title {
-      font-weight: 500;
-      font-size: 1.125rem;
-    }
-
-    .chat-area-container {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .document-fab {
-      position: absolute;
-      bottom: 24px;
-      right: 24px;
-      z-index: 10;
+    .empty-state app-chat-area {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     /* Mobile adjustments */
@@ -178,48 +113,31 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
         width: 280px;
       }
       
-      .toolbar-title {
-        font-size: 1rem;
-      }
-    }
-
-    /* Responsive breakpoints */
-    @media (max-width: 599px) {
-      .mobile-toolbar {
-        padding: 0 8px;
-      }
-      
-      .toolbar-title {
-        font-size: 0.875rem;
+      .empty-state {
+        align-items: flex-start;
+        padding-top: 20vh;
       }
     }
   `]
 })
 export class ChatLayoutComponent implements OnInit {
-  private breakpointObserver = inject(BreakpointObserver);
   private chatService = inject(ChatService);
   private modelService = inject(ModelService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  
+  // Services
+  protected uiState = inject(UiStateService);
+  protected layout = inject(LayoutService);
 
   // Reactive state
-  sidenavOpened = signal(true);
   currentConversation = this.chatService.currentConversation;
-
-  // Computed properties
-  isMobile = computed(() => {
-    return this.breakpointObserver.isMatched(['(max-width: 767px)']);
-  });
-
-  sidenavMode = computed(() => {
-    return this.isMobile() ? 'over' : 'side';
-  });
 
   ngOnInit(): void {
     // Handle mobile view
-    if (this.isMobile()) {
-      this.sidenavOpened.set(false);
+    if (this.layout.isMobile()) {
+      this.uiState.setSidenavOpened(false);
     }
 
     // Load conversation from route parameter
@@ -232,15 +150,6 @@ export class ChatLayoutComponent implements OnInit {
         this.chatService.setCurrentConversation(null);
       }
     });
-
-    // Listen for breakpoint changes
-    this.breakpointObserver
-      .observe([Breakpoints.Handset, Breakpoints.Tablet])
-      .subscribe(result => {
-        if (result.matches && this.sidenavOpened()) {
-          this.sidenavOpened.set(false);
-        }
-      });
   }
 
   private loadConversation(id: string): void {
@@ -261,24 +170,18 @@ export class ChatLayoutComponent implements OnInit {
   }
 
   onConversationSelected(conversationId: string): void {
-    if (this.isMobile()) {
-      this.sidenavOpened.set(false);
+    if (this.layout.isMobile()) {
+      this.uiState.setSidenavOpened(false);
     }
     this.router.navigate(['/chat', conversationId]);
   }
 
   onNewConversation(): void {
-    this.chatService.createConversation().subscribe({
-      next: (conversation) => {
-        if (this.isMobile()) {
-          this.sidenavOpened.set(false);
-        }
-        this.router.navigate(['/chat', conversation.id]);
-      },
-      error: (error) => {
-        console.error('Error creating conversation:', error);
-      }
-    });
+    // Navigate to empty state instead of creating conversation immediately
+    if (this.layout.isMobile()) {
+      this.uiState.setSidenavOpened(false);
+    }
+    this.router.navigate(['/chat']);
   }
 
   onConversationUpdate(): void {

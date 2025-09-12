@@ -1,0 +1,53 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <!-- Sidenav Toggle -->
+  <button 
+    mat-icon-button 
+    (click)="toggleSidenav.emit()"
+    matTooltip="Toggle sidebar"
+    class="sidenav-toggle">
+    <mat-icon>{{ isSidenavOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+  </button>
+
+  <!-- App Title -->
+  <span class="app-title">AI Chatbot</span>
+
+  <div class="toolbar-spacer"></div>
+
+  <!-- Theme Toggle -->
+  <button 
+    mat-icon-button 
+    matTooltip="Toggle theme"
+    class="theme-toggle">
+    <mat-icon>dark_mode</mat-icon>
+  </button>
+
+  <!-- User Menu -->
+  <button 
+    mat-icon-button 
+    [matMenuTriggerFor]="userMenu"
+    matTooltip="User menu"
+    class="user-menu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>person</mat-icon>
+      <span>Profile</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item disabled>
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Admin (Coming Soon)</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item>
+      <mat-icon>logout</mat-icon>
+      <span>Sign Out</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

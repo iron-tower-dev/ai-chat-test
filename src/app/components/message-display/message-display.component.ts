@@ -146,13 +146,21 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
     }
 
     .message-user .message-card {
-      background: linear-gradient(135deg, var(--mat-primary-50) 0%, var(--mat-primary-100) 100%);
-      border: 1px solid var(--mat-primary-200);
+      background: linear-gradient(135deg, 
+        rgba(99, 102, 241, 0.08) 0%, 
+        rgba(139, 92, 246, 0.08) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+      backdrop-filter: blur(10px);
     }
 
     .message-ai .message-card {
-      background: var(--mat-surface-variant);
-      border: 1px solid var(--mat-outline-variant);
+      background: linear-gradient(135deg, 
+        rgba(248, 250, 252, 0.9) 0%, 
+        rgba(241, 245, 249, 0.9) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(10px);
     }
 
     .message-content-wrapper {
