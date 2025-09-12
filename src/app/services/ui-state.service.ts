@@ -22,7 +22,7 @@ export class UiStateService {
   }
 
   toggleSidenav(): void {
-    this._sidenavOpened.set(!this._sidenavOpened());
+    this._sidenavOpened.update(v => !v);
   }
 
   // Methods to update loading state
